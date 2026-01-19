@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrajeet's Tic-Tac-Toe 🎮</title>
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --border-gray: #30363d;
+            --text-white: #c9d1d9;
+            --gh-blue: #58a6ff;
+            --gh-green: #238636;
+            --gh-red: #da3633;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-gray);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        h1 { color: var(--gh-blue); margin-bottom: 5px; }
+        .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #21262d;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cell:hover { background-color: #30363d; }
+        .cell.x { color: var(--gh-blue); }
+        .cell.o { color: #f0883e; }
+
+        #status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            height: 30px;
+        }
+
+        .reset-btn {
+            background-color: var(--gh-green);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .reset-btn:hover { background-color: #2ea043; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div class="subtitle">By @chowdhuryagrajeet-byte | Dev Journey</div>
+        
+        <div id="status">Player X's Turn</div>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const statusDisplay = document.getElementById('status');
+        const cells = document.querySelectorAll('.cell');
+        
+        let gameActive = true;
+        let currentPlayer = "X";
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function handleCellClick(e) {
+            const clickedCell = e.target;
+            const index = parseInt(clickedCell.getAttribute('data-index'));
+
+            if (gameState[index] !== "" || !gameActive) return;
+
+            gameState[index] = currentPlayer;
+            clickedCell.innerText = currentPlayer;
+            clickedCell.classList.add(currentPlayer.toLowerCase());
+
+            checkResult();
+        }
+
+        function checkResult() {
+            let roundWon = false;
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                statusDisplay.innerText = `Player ${currentPlayer} Wins! 🎉`;
+                statusDisplay.style.color = "var(--gh-green)";
+                gameActive = false;
+                return;
+            }
+
+            if (!gameState.includes("")) {
+                statusDisplay.innerText = "It's a Draw! 🤝";
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusDisplay.innerText = `Player ${currentPlayer}'s Turn`;
+        }
+
+        function resetGame() {
+            gameActive = true;
+            currentPlayer = "X";
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            statusDisplay.innerText = "Player X's Turn";
+            statusDisplay.style.color = "var(--text-white)";
+            cells.forEach(cell => {
+                cell.innerText = "";
+                cell.className = "cell";
+            });
+        }
+
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    </script>
+</body>
+</html>
